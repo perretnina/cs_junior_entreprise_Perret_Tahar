@@ -11,7 +11,7 @@ import {
   JwtAuthGuard,
   type AuthenticatedRequest,
 } from './jwt-auth.guard.js';
-import { LoginDto } from './login.dto.js';
+import { LoginDto } from './dto/login.dto.js';
 
 @Controller('auth')
 export class AuthController {

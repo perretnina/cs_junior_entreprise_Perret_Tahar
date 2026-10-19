@@ -8,8 +8,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { MissionsService } from './missions.service.js';
-import * as jwtAuthGuard from '../auth/dto/jwt-auth.guard.js';
-import { BureauGuard } from '../auth/dto/bureau.guard.js';
+import * as jwtAuthGuard from '../auth/jwt-auth.guard.js';
+import { BureauGuard } from '../auth/bureau.guard.js';
 
 @Controller('missions')
 @UseGuards(jwtAuthGuard.JwtAuthGuard)

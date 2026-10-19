@@ -13,8 +13,8 @@ import {
 import { ProspectsService } from './prospects.service.js';
 import { CreateProspectDto } from './dto/create-prospect.dto.js';
 import { UpdateProspectDto } from './dto/update-prospect.dto.js';
-import { JwtAuthGuard } from '../auth/dto/jwt-auth.guard.js';
-import { BureauGuard } from '../auth/dto/bureau.guard.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { BureauGuard } from '../auth/bureau.guard.js';
 
 @Controller('prospects')
 @UseGuards(JwtAuthGuard, BureauGuard)

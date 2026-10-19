@@ -7,9 +7,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { KpiService } from './kpi.service.js';
-import { JwtAuthGuard } from '../auth/dto/jwt-auth.guard.js';
-import { BureauGuard } from '../auth/dto/bureau.guard.js';
 import { Domaine } from '../generated/prisma/enums.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { BureauGuard } from '../auth/bureau.guard.js';
 
 @Controller('kpi')
 @UseGuards(JwtAuthGuard, BureauGuard)

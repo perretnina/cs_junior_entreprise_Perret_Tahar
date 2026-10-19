@@ -12,8 +12,8 @@ import {
 import { IntervenantsService } from './intervenants.service.js';
 import { CreateIntervenantDto } from './dto/create-intervenant.dto.js';
 import { UpdateIntervenantDto } from './dto/update-intervenant.dto.js';
-import { JwtAuthGuard } from '../auth/dto/jwt-auth.guard.js';
-import { BureauGuard } from '../auth/dto/bureau.guard.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { BureauGuard } from '../auth/bureau.guard.js';
 
 @Controller('intervenants')
 @UseGuards(JwtAuthGuard, BureauGuard)
