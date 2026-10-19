@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: junior
+      POSTGRES_PASSWORD: junior_dev
+      POSTGRES_DB: junior_entreprise
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

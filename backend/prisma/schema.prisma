@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  BUREAU
+  INTERVENANT
+}
+
+model User {
+  id               Int          @id @default(autoincrement())
+  email            String       @unique
+  passwordHash     String
+  isBureau         Boolean      @default(false)
+  isIntervenant    Boolean      @default(false)
+  bureauValidUntil DateTime?
+  createdAt        DateTime     @default(now())
+  intervenant      Intervenant?
+}
+
+model Intervenant {
+  id            Int      @id @default(autoincrement())
+  firstName     String
+  lastName      String
+  email         String   @unique
+  schoolEndDate DateTime @db.Date
+
+  userId   Int?                 @unique
+  user     User?                @relation(fields: [userId], references: [id])
+  missions MissionIntervenant[]
+}
+
+enum Domaine {
+  INFORMATIQUE
+  MICROELECTRONIQUE
+}
+
+enum StatutProspect {
+  PAS_ENCORE_CONTACTE
+  A_RECONTACTER
+  PAS_INTERESSE
+  EN_COURS
+  A_FIDELISER
+}
+
+enum StatutMission {
+  DEVIS
+  SIGNE
+  FACTURE_ACOMPTE_EMISE
+  FACTURE_ACOMPTE_PAYEE
+  EN_COURS
+  FACTURE_SOLDE_EMISE
+  FACTURE_SOLDE_PAYEE
+  TERMINEE
+}
+
+model Prospect {
+  id     Int            @id @default(autoincrement())
+  name   String
+  email  String?
+  phone  String?
+  status StatutProspect @default(PAS_ENCORE_CONTACTE)
+  domain Domaine
+
+  missions Mission[]
+}
+
+model Mission {
+  id        Int           @id @default(autoincrement())
+  title     String
+  price     Decimal       @db.Decimal(12, 2)
+  startDate DateTime      @db.Date
+  endDate   DateTime      @db.Date
+  signedAt  DateTime?     @db.Date
+  status    StatutMission @default(DEVIS)
+  domain    Domaine
+
+  prospectId Int
+  prospect   Prospect @relation(fields: [prospectId], references: [id])
+
+  intervenants MissionIntervenant[]
+}
+
+model MissionIntervenant {
+  missionId     Int
+  intervenantId Int
+
+  mission     Mission     @relation(fields: [missionId], references: [id])
+  intervenant Intervenant @relation(fields: [intervenantId], references: [id])
+
+  @@id([missionId, intervenantId])
+}

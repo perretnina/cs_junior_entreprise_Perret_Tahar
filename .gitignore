@@ -1,0 +1,11 @@
+# Node.js
+node_modules/
+dist/
+coverage/
+
+# Environment variables
+.env
+.env.*
+
+# macOS
+.DS_Store
