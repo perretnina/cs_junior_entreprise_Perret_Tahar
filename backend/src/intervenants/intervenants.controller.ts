@@ -1,9 +1,22 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { IntervenantsService } from './intervenants.service.js';
 import { CreateIntervenantDto } from './dto/create-intervenant.dto.js';
 import { UpdateIntervenantDto } from './dto/update-intervenant.dto.js';
+import { JwtAuthGuard } from '../auth/dto/jwt-auth.guard.js';
+import { BureauGuard } from '../auth/dto/bureau.guard.js';
 
 @Controller('intervenants')
+@UseGuards(JwtAuthGuard, BureauGuard)
 export class IntervenantsController {
   constructor(
     private readonly intervenantsService: IntervenantsService,
@@ -20,16 +33,15 @@ export class IntervenantsController {
   }
 
   @Patch(':id')
-update(
-  @Param('id', ParseIntPipe) id: number,
-  @Body() dto: UpdateIntervenantDto,
-) {
-  return this.intervenantsService.update(id, dto);
-}
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateIntervenantDto,
+  ) {
+    return this.intervenantsService.update(id, dto);
+  }
 
-@Delete(':id')
-remove(@Param('id', ParseIntPipe) id: number) {
-  return this.intervenantsService.remove(id);
-}
-
+  @Delete(':id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.intervenantsService.remove(id);
+  }
 }
