@@ -1,3 +1,4 @@
+
 import { apiRequest } from './client';
 
 export type MyMission = {
@@ -7,6 +8,9 @@ export type MyMission = {
   endDate: string;
   status: string;
   domain: string;
+  prospect: {
+    name: string;
+  };
 };
 
 export type Mission = MyMission & {

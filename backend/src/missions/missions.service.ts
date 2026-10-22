@@ -85,6 +85,11 @@ export class MissionsService {
         endDate: true,
         status: true,
         domain: true,
+        prospect: {
+          select: {
+            name: true,
+          },
+        },
       },
       orderBy: { startDate: 'desc' },
     });

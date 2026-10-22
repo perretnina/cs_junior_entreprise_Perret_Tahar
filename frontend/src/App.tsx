@@ -2,6 +2,7 @@
 import { Routes, Route, Navigate } from 'react-router';
 
 import MainLayout from './layouts/MainLayout';
+import IntervenantLayout from './layouts/IntervenantLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 
 import LoginPage from './pages/LoginPage';
@@ -32,8 +33,16 @@ export default function App() {
       </Route>
 
       <Route element={<ProtectedRoute />}>
-        <Route path="/intervenant" element={<IntervenantHomePage />} />
-        <Route path="/intervenant/missions" element={<MyMissionsPage />} />
+        <Route element={<IntervenantLayout />}>
+          <Route
+            path="/intervenant"
+            element={<IntervenantHomePage />}
+          />
+          <Route
+            path="/intervenant/missions"
+            element={<MyMissionsPage />}
+          />
+        </Route>
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router';
 import {
   BriefcaseBusiness,
@@ -7,83 +8,51 @@ import {
 import { useAuth } from '../context/AuthContext';
 
 export default function IntervenantHomePage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <div>
-          <h1 className="app-title">
-            Espace Intervenant
-          </h1>
+    <>
+      <div className="page-heading">
+        <h1>Mon espace</h1>
+        <p>
+          Retrouvez vos informations et vos missions.
+        </p>
+      </div>
 
-          <p className="app-tagline">
-            Junior-Entreprise
+      <div className="card-grid">
+        <section className="card">
+          <UserRound
+            className="kpi-icon"
+            size={28}
+          />
+
+          <h2 className="card-title">
+            Mon profil
+          </h2>
+
+          <p className="profile-info">
+            <strong>Email :</strong> {user?.email}
           </p>
-        </div>
+        </section>
 
-        <nav className="app-nav">
-          <Link to="/intervenant">
-            Accueil
-          </Link>
+        <Link
+          to="/intervenant/missions"
+          className="card card-link"
+        >
+          <BriefcaseBusiness
+            className="kpi-icon"
+            size={28}
+          />
 
-          <Link to="/intervenant/missions">
+          <h2 className="card-title">
             Mes missions
-          </Link>
+          </h2>
 
-          <button
-            type="button"
-            className="link-button"
-            onClick={logout}
-          >
-            Déconnexion
-          </button>
-        </nav>
-      </header>
-
-      <main>
-        <div className="page-heading">
-          <h1>Mon espace</h1>
-          <p>
-            Retrouvez vos informations et vos missions.
+          <p className="card-description">
+            Consulter les missions qui me sont affectées
           </p>
-        </div>
-
-        <div className="card-grid">
-          <section className="card">
-            <UserRound
-              className="kpi-icon"
-              size={28}
-            />
-
-            <h2 className="card-title">
-              Mon profil
-            </h2>
-
-            <p className="profile-info">
-              <strong>Email :</strong> {user?.email}
-            </p>
-          </section>
-
-          <Link
-            to="/intervenant/missions"
-            className="card card-link"
-          >
-            <BriefcaseBusiness
-              className="kpi-icon"
-              size={28}
-            />
-
-            <h2 className="card-title">
-              Mes missions
-            </h2>
-
-            <p className="card-description">
-              Consulter les missions qui me sont affectées
-            </p>
-          </Link>
-        </div>
-      </main>
-    </div>
+        </Link>
+      </div>
+    </>
   );
 }
