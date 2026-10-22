@@ -1,0 +1,222 @@
+[
+  {
+    "title": "[TEST JE] Développement site vitrine",
+    "prospectKey": "P01",
+    "price": "4500.00",
+    "startDate": "2026-09-01",
+    "endDate": "2026-11-15",
+    "signedAt": "2026-08-20",
+    "status": "EN_COURS",
+    "domain": "INFORMATIQUE",
+    "intervenantEmails": ["intervenant1@test.local", "intervenant2@test.local"]
+  },
+  {
+    "title": "[TEST JE] Tableau de bord commercial",
+    "prospectKey": "P01",
+    "price": "6200.00",
+    "startDate": "2026-10-01",
+    "endDate": "2026-12-20",
+    "signedAt": "2026-09-15",
+    "status": "EN_COURS",
+    "domain": "INFORMATIQUE",
+    "intervenantEmails": ["intervenant1@test.local"]
+  },
+  {
+    "title": "[TEST JE] Audit de base de données",
+    "prospectKey": "P02",
+    "price": "2800.00",
+    "startDate": "2026-11-10",
+    "endDate": "2026-12-10",
+    "signedAt": null,
+    "status": "DEVIS",
+    "domain": "INFORMATIQUE",
+    "intervenantEmails": []
+  },
+  {
+    "title": "[TEST JE] Conception circuit analogique",
+    "prospectKey": "P03",
+    "price": "9800.00",
+    "startDate": "2026-03-01",
+    "endDate": "2026-06-30",
+    "signedAt": "2026-02-10",
+    "status": "TERMINEE",
+    "domain": "MICROELECTRONIQUE",
+    "intervenantEmails": ["intervenant2@test.local", "mixte@test.local"]
+  },
+  {
+    "title": "[TEST JE] Application mobile interne",
+    "prospectKey": "P04",
+    "price": "12500.00",
+    "startDate": "2026-11-01",
+    "endDate": "2027-03-31",
+    "signedAt": "2026-10-15",
+    "status": "SIGNE",
+    "domain": "INFORMATIQUE",
+    "intervenantEmails": ["intervenant1@test.local", "mixte@test.local"]
+  },
+  {
+    "title": "[TEST JE] Étude de consommation énergétique",
+    "prospectKey": "P05",
+    "price": "3500.00",
+    "startDate": "2027-01-10",
+    "endDate": "2027-03-15",
+    "signedAt": null,
+    "status": "DEVIS",
+    "domain": "MICROELECTRONIQUE",
+    "intervenantEmails": []
+  },
+  {
+    "title": "[TEST JE] Automatisation de rapports",
+    "prospectKey": "P06",
+    "price": "5100.00",
+    "startDate": "2026-04-01",
+    "endDate": "2026-07-01",
+    "signedAt": "2026-03-15",
+    "status": "TERMINEE",
+    "domain": "INFORMATIQUE",
+    "intervenantEmails": ["intervenant1@test.local"]
+  },
+  {
+    "title": "[TEST JE] Prototype carte électronique",
+    "prospectKey": "P03",
+    "price": "15000.00",
+    "startDate": "2026-09-15",
+    "endDate": "2027-01-30",
+    "signedAt": "2026-09-01",
+    "status": "EN_COURS",
+    "domain": "MICROELECTRONIQUE",
+    "intervenantEmails": ["intervenant2@test.local", "mixte@test.local"]
+  },
+  {
+    "title": "[TEST JE] API de gestion clients",
+    "prospectKey": "P08",
+    "price": "7200.00",
+    "startDate": "2026-12-01",
+    "endDate": "2027-02-28",
+    "signedAt": null,
+    "status": "DEVIS",
+    "domain": "INFORMATIQUE",
+    "intervenantEmails": []
+  },
+  {
+    "title": "[TEST JE] Tests de composants électroniques",
+    "prospectKey": "P09",
+    "price": "4200.00",
+    "startDate": "2026-08-01",
+    "endDate": "2026-10-15",
+    "signedAt": "2026-07-15",
+    "status": "FACTURE_SOLDE_EMISE",
+    "domain": "MICROELECTRONIQUE",
+    "intervenantEmails": ["intervenant2@test.local"]
+  },
+  {
+    "title": "[TEST JE] Développement application React",
+    "prospectKey": "P10",
+    "price": "8900.00",
+    "startDate": "2027-01-01",
+    "endDate": "2027-04-30",
+    "signedAt": null,
+    "status": "DEVIS",
+    "domain": "INFORMATIQUE",
+    "intervenantEmails": []
+  },
+  {
+    "title": "[TEST JE] Firmware capteur connecté",
+    "prospectKey": "P11",
+    "price": "11000.00",
+    "startDate": "2026-07-01",
+    "endDate": "2026-11-30",
+    "signedAt": "2026-06-10",
+    "status": "EN_COURS",
+    "domain": "MICROELECTRONIQUE",
+    "intervenantEmails": ["mixte@test.local"]
+  },
+  {
+    "title": "[TEST JE] Pipeline de traitement de données",
+    "prospectKey": "P12",
+    "price": "6700.00",
+    "startDate": "2026-09-01",
+    "endDate": "2026-12-01",
+    "signedAt": "2026-08-25",
+    "status": "FACTURE_ACOMPTE_PAYEE",
+    "domain": "INFORMATIQUE",
+    "intervenantEmails": ["intervenant1@test.local"]
+  },
+  {
+    "title": "[TEST JE] Refonte interface utilisateur",
+    "prospectKey": "P06",
+    "price": "3900.00",
+    "startDate": "2026-02-01",
+    "endDate": "2026-04-15",
+    "signedAt": "2026-01-20",
+    "status": "FACTURE_SOLDE_PAYEE",
+    "domain": "INFORMATIQUE",
+    "intervenantEmails": ["intervenant1@test.local"]
+  },
+  {
+    "title": "[TEST JE] Étude architecture FPGA",
+    "prospectKey": "P09",
+    "price": "13200.00",
+    "startDate": "2026-11-01",
+    "endDate": "2027-04-01",
+    "signedAt": "2026-10-01",
+    "status": "FACTURE_ACOMPTE_EMISE",
+    "domain": "MICROELECTRONIQUE",
+    "intervenantEmails": ["intervenant2@test.local", "mixte@test.local"]
+  },
+  {
+    "title": "[TEST JE] Migration infrastructure cloud",
+    "prospectKey": "P04",
+    "price": "7400.00",
+    "startDate": "2026-05-01",
+    "endDate": "2026-08-01",
+    "signedAt": "2026-04-15",
+    "status": "TERMINEE",
+    "domain": "INFORMATIQUE",
+    "intervenantEmails": ["intervenant1@test.local"]
+  },
+  {
+    "title": "[TEST JE] Banc de test microcontrôleur",
+    "prospectKey": "P11",
+    "price": "5600.00",
+    "startDate": "2026-10-01",
+    "endDate": "2027-01-15",
+    "signedAt": "2026-09-20",
+    "status": "EN_COURS",
+    "domain": "MICROELECTRONIQUE",
+    "intervenantEmails": ["mixte@test.local"]
+  },
+  {
+    "title": "[TEST JE] Analyse prédictive des ventes",
+    "prospectKey": "P12",
+    "price": "8100.00",
+    "startDate": "2027-01-15",
+    "endDate": "2027-05-01",
+    "signedAt": "2026-10-10",
+    "status": "SIGNE",
+    "domain": "INFORMATIQUE",
+    "intervenantEmails": ["intervenant1@test.local"]
+  },
+  {
+    "title": "[TEST JE] Intégration système embarqué",
+    "prospectKey": "P05",
+    "price": "9500.00",
+    "startDate": "2027-02-01",
+    "endDate": "2027-06-01",
+    "signedAt": null,
+    "status": "DEVIS",
+    "domain": "MICROELECTRONIQUE",
+    "intervenantEmails": []
+  },
+  {
+    "title": "[TEST JE] Maintenance plateforme web",
+    "prospectKey": "P01",
+    "price": "2400.00",
+    "startDate": "2026-06-01",
+    "endDate": "2026-09-01",
+    "signedAt": "2026-05-15",
+    "status": "TERMINEE",
+    "domain": "INFORMATIQUE",
+    "intervenantEmails": ["intervenant2@test.local"]
+  }
+]

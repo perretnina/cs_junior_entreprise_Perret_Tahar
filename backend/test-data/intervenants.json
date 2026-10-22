@@ -1,0 +1,26 @@
+[
+  {
+    "email": "intervenant1@test.local",
+    "firstName": "Alice",
+    "lastName": "Martin",
+    "schoolEndDate": "2028-06-30"
+  },
+  {
+    "email": "intervenant2@test.local",
+    "firstName": "Lucas",
+    "lastName": "Bernard",
+    "schoolEndDate": "2027-06-30"
+  },
+  {
+    "email": "intervenant3@test.local",
+    "firstName": "Emma",
+    "lastName": "Petit",
+    "schoolEndDate": "2028-06-30"
+  },
+  {
+    "email": "mixte@test.local",
+    "firstName": "Thomas",
+    "lastName": "Robert",
+    "schoolEndDate": "2027-06-30"
+  }
+]

@@ -1,26 +1,43 @@
 import type { LucideIcon } from 'lucide-react';
+import { Link } from 'react-router';
 
 type KpiCardProps = {
   title: string;
   value: string;
   icon: LucideIcon;
+  to: string;
 };
 
 export default function KpiCard({
   title,
   value,
   icon: Icon,
+  to,
 }: KpiCardProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-slate-500">{title}</p>
-        <Icon className="text-blue-600" size={22} />
+    <Link
+      to={to}
+      className="card kpi-card"
+      style={{
+        display: 'block',
+        textDecoration: 'none',
+        color: 'inherit',
+        cursor: 'pointer',
+        transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+      }}
+      onMouseEnter={(event) => {
+        event.currentTarget.style.transform = 'translateY(-3px)';
+      }}
+      onMouseLeave={(event) => {
+        event.currentTarget.style.transform = '';
+      }}
+    >
+      <div className="kpi-header">
+        <p className="kpi-title">{title}</p>
+        <Icon className="kpi-icon" size={22} />
       </div>
 
-      <p className="mt-4 text-3xl font-bold text-slate-900">
-        {value}
-      </p>
-    </div>
+      <p className="kpi-value">{value}</p>
+    </Link>
   );
 }

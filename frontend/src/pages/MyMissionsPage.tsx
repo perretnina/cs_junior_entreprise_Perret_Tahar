@@ -1,6 +1,8 @@
-
 import { useEffect, useState } from 'react';
-import { getMyMissions, type MyMission } from '../api/missions';
+import {
+  getMyMissions,
+  type MyMission,
+} from '../api/missions';
 
 export default function MyMissionsPage() {
   const [missions, setMissions] = useState<MyMission[]>([]);
@@ -27,59 +29,73 @@ export default function MyMissionsPage() {
   }, []);
 
   if (loading) {
-    return <p className="p-8">Chargement des missions...</p>;
+    return (
+      <div className="app">
+        <p className="status">
+          Chargement des missions...
+        </p>
+      </div>
+    );
   }
 
   if (error) {
-    return <p role="alert" className="p-8 text-red-600">{error}</p>;
+    return (
+      <div className="app">
+        <div className="error" role="alert">
+          {error}
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-slate-900">
-        Mes missions
-      </h1>
+    <main className="app">
+      <div className="page-heading">
+        <h1>Mes missions</h1>
+        <p>
+          Liste des missions qui vous sont affectées
+        </p>
+      </div>
 
       {missions.length === 0 ? (
-        <p className="text-slate-500">
+        <p className="empty">
           Aucune mission ne vous est actuellement affectée.
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
-          <table className="w-full text-left">
-            <thead className="bg-slate-50 text-sm text-slate-500">
+        <div className="table-container">
+          <table className="table">
+            <thead>
               <tr>
-                <th className="px-6 py-4">Mission</th>
-                <th className="px-6 py-4">Domaine</th>
-                <th className="px-6 py-4">Début</th>
-                <th className="px-6 py-4">Fin</th>
-                <th className="px-6 py-4">Statut</th>
+                <th>Mission</th>
+                <th>Domaine</th>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Statut</th>
               </tr>
             </thead>
 
             <tbody>
               {missions.map((mission) => (
-                <tr
-                  key={mission.id}
-                  className="border-t border-slate-100"
-                >
-                  <td className="px-6 py-4 font-medium">
-                    {mission.title}
+                <tr key={mission.id}>
+                  <td>{mission.title}</td>
+                  <td>{mission.domain}</td>
+                  <td>
+                    {new Date(
+                      mission.startDate,
+                    ).toLocaleDateString('fr-FR')}
                   </td>
-                  <td className="px-6 py-4">{mission.domain}</td>
-                  <td className="px-6 py-4">
-                    {new Date(mission.startDate).toLocaleDateString('fr-FR')}
+                  <td>
+                    {new Date(
+                      mission.endDate,
+                    ).toLocaleDateString('fr-FR')}
                   </td>
-                  <td className="px-6 py-4">
-                    {new Date(mission.endDate).toLocaleDateString('fr-FR')}
-                  </td>
-                  <td className="px-6 py-4">{mission.status}</td>
+                  <td>{mission.status}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
-    </div>
+    </main>
   );
 }

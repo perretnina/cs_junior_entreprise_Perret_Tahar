@@ -1,4 +1,6 @@
 
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
 import {
   BriefcaseBusiness,
   Building2,
@@ -7,78 +9,207 @@ import {
 } from 'lucide-react';
 
 import KpiCard from '../components/KpiCard';
+import { getMissions, type Mission } from '../api/missions';
+import { getProspects } from '../api/prospects';
+import { getIntervenants } from '../api/intervenants';
+import { getKpi } from '../api/kpi';
 
-const missions = [
-  {
-    id: 1,
-    title: 'Développement web',
-    client: 'Entreprise Alpha',
-    status: 'En cours',
-  },
-  {
-    id: 2,
-    title: 'Analyse de données',
-    client: 'Entreprise Beta',
-    status: 'Terminée',
-  },
-  {
-    id: 3,
-    title: 'Application mobile',
-    client: 'Entreprise Gamma',
-    status: 'À venir',
-  },
-];
+type DashboardData = {
+  totalMissions: number;
+  totalProspects: number;
+  signedRevenue: number;
+  totalIntervenants: number;
+  recentMissions: Mission[];
+};
+
+const statusLabels: Record<string, string> = {
+  DEVIS: 'Devis',
+  SIGNE: 'Signée',
+  FACTURE_ACOMPTE_EMISE: 'Facture acompte émise',
+  FACTURE_ACOMPTE_PAYEE: 'Acompte payé',
+  EN_COURS: 'En cours',
+  FACTURE_SOLDE_EMISE: 'Facture solde émise',
+  FACTURE_SOLDE_PAYEE: 'Solde payé',
+  TERMINEE: 'Terminée',
+};
+
+function getStatusStyle(status: string) {
+  if (status === 'TERMINEE' || status === 'FACTURE_SOLDE_PAYEE') {
+    return 'bg-green-100 text-green-800';
+  }
+
+  if (status === 'EN_COURS') {
+    return 'bg-blue-100 text-blue-800';
+  }
+
+  if (status === 'DEVIS') {
+    return 'bg-amber-100 text-amber-800';
+  }
+
+  return 'bg-slate-100 text-slate-700';
+}
+
+const currencyFormatter = new Intl.NumberFormat('fr-FR', {
+  style: 'currency',
+  currency: 'EUR',
+  maximumFractionDigits: 0,
+});
 
 export default function DashboardPage() {
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadDashboard() {
+      try {
+        const [missions, prospects, intervenants, kpi] =
+          await Promise.all([
+            getMissions(),
+            getProspects(),
+            getIntervenants(),
+            getKpi(),
+          ]);
+
+        if (!active) return;
+
+        setData({
+          totalMissions: missions.length,
+          totalProspects: prospects.length,
+          signedRevenue: kpi.signedRevenue,
+          totalIntervenants: intervenants.length,
+          recentMissions: [...missions]
+            .sort((a, b) => b.id - a.id)
+            .slice(0, 5),
+        });
+      } catch (err) {
+        if (!active) return;
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Impossible de charger le tableau de bord.',
+        );
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadDashboard();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">
-          Tableau de bord
-        </h1>
-        <p className="mt-2 text-slate-500">
-          Vue d'ensemble de la Junior-Entreprise
+    <>
+      <div className="page-heading">
+        <h1>Tableau de bord</h1>
+        <p>Vue d'ensemble de la Junior-Entreprise</p>
+      </div>
+
+      {error && (
+        <p role="alert" style={{ color: '#b91c1c', marginBottom: 20 }}>
+          {error}
         </p>
-      </div>
+      )}
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <KpiCard title="Missions" value="12" icon={BriefcaseBusiness} />
-        <KpiCard title="Prospects" value="28" icon={Building2} />
-        <KpiCard title="Chiffre d'affaires" value="42 500 €" icon={Wallet} />
-        <KpiCard title="Intervenants" value="34" icon={Users} />
-      </div>
+      {loading ? (
+        <p>Chargement du tableau de bord...</p>
+      ) : data ? (
+        <>
+          <div className="card-grid">
+            <KpiCard
+              title="Missions"
+              value={String(data.totalMissions)}
+              icon={BriefcaseBusiness}
+              to="/missions"
+            />
 
-      <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-200 p-6">
-          <h2 className="text-xl font-semibold text-slate-900">
-            Missions récentes
-          </h2>
-        </div>
+            <KpiCard
+              title="Prospects"
+              value={String(data.totalProspects)}
+              icon={Building2}
+              to="/prospects"
+            />
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-slate-50 text-sm text-slate-500">
-              <tr>
-                <th className="px-6 py-4">Mission</th>
-                <th className="px-6 py-4">Client</th>
-                <th className="px-6 py-4">Statut</th>
-              </tr>
-            </thead>
+            <KpiCard
+              title="Chiffre d'affaires"
+              value={currencyFormatter.format(data.signedRevenue)}
+              icon={Wallet}
+              to="/kpi"
+            />
 
-            <tbody>
-              {missions.map((mission) => (
-                <tr key={mission.id} className="border-t border-slate-100">
-                  <td className="px-6 py-4 font-medium">
-                    {mission.title}
-                  </td>
-                  <td className="px-6 py-4">{mission.client}</td>
-                  <td className="px-6 py-4">{mission.status}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </div>
+            <KpiCard
+              title="Intervenants"
+              value={String(data.totalIntervenants)}
+              icon={Users}
+              to="/intervenants"
+            />
+          </div>
+
+          <section className="section">
+            <h2 className="section-title">
+              Missions récentes
+            </h2>
+
+            <div className="table-container">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Mission</th>
+                    <th>Client</th>
+                    <th>Statut</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {data.recentMissions.length === 0 ? (
+                    <tr>
+                      <td colSpan={3}>
+                        Aucune mission enregistrée.
+                      </td>
+                    </tr>
+                  ) : (
+                    data.recentMissions.map((mission) => (
+                      <tr key={mission.id}>
+                        <td>
+                          <Link
+                            to="/missions"
+                            style={{
+                              color: 'inherit',
+                              textDecoration: 'none',
+                              fontWeight: 500,
+                            }}
+                          >
+                            {mission.title}
+                          </Link>
+                        </td>
+
+                        <td>{mission.prospect.name}</td>
+
+                        <td>
+                          <span
+                            className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${getStatusStyle(mission.status)}`}
+                          >
+                            {statusLabels[mission.status] ??
+                              mission.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </>
+      ) : null}
+    </>
   );
 }

@@ -1,0 +1,98 @@
+[
+  {
+    "key": "P01",
+    "name": "[TEST JE] Alpha Technologies",
+    "email": "contact@alpha.example",
+    "phone": "0100000001",
+    "status": "EN_COURS",
+    "domain": "INFORMATIQUE"
+  },
+  {
+    "key": "P02",
+    "name": "[TEST JE] Beta Consulting",
+    "email": "contact@beta.example",
+    "phone": "0100000002",
+    "status": "A_RECONTACTER",
+    "domain": "INFORMATIQUE"
+  },
+  {
+    "key": "P03",
+    "name": "[TEST JE] Gamma Electronics",
+    "email": "contact@gamma.example",
+    "phone": "0100000003",
+    "status": "A_FIDELISER",
+    "domain": "MICROELECTRONIQUE"
+  },
+  {
+    "key": "P04",
+    "name": "[TEST JE] Delta Systems",
+    "email": "contact@delta.example",
+    "phone": "0100000004",
+    "status": "EN_COURS",
+    "domain": "INFORMATIQUE"
+  },
+  {
+    "key": "P05",
+    "name": "[TEST JE] Epsilon Circuits",
+    "email": "contact@epsilon.example",
+    "phone": "0100000005",
+    "status": "PAS_ENCORE_CONTACTE",
+    "domain": "MICROELECTRONIQUE"
+  },
+  {
+    "key": "P06",
+    "name": "[TEST JE] Zeta Digital",
+    "email": "contact@zeta.example",
+    "phone": "0100000006",
+    "status": "A_FIDELISER",
+    "domain": "INFORMATIQUE"
+  },
+  {
+    "key": "P07",
+    "name": "[TEST JE] Eta Semiconductor",
+    "email": "contact@eta.example",
+    "phone": "0100000007",
+    "status": "PAS_INTERESSE",
+    "domain": "MICROELECTRONIQUE"
+  },
+  {
+    "key": "P08",
+    "name": "[TEST JE] Theta Solutions",
+    "email": "contact@theta.example",
+    "phone": "0100000008",
+    "status": "A_RECONTACTER",
+    "domain": "INFORMATIQUE"
+  },
+  {
+    "key": "P09",
+    "name": "[TEST JE] Iota Micro",
+    "email": "contact@iota.example",
+    "phone": "0100000009",
+    "status": "EN_COURS",
+    "domain": "MICROELECTRONIQUE"
+  },
+  {
+    "key": "P10",
+    "name": "[TEST JE] Kappa Software",
+    "email": "contact@kappa.example",
+    "phone": "0100000010",
+    "status": "PAS_ENCORE_CONTACTE",
+    "domain": "INFORMATIQUE"
+  },
+  {
+    "key": "P11",
+    "name": "[TEST JE] Lambda Embedded",
+    "email": "contact@lambda.example",
+    "phone": "0100000011",
+    "status": "A_FIDELISER",
+    "domain": "MICROELECTRONIQUE"
+  },
+  {
+    "key": "P12",
+    "name": "[TEST JE] Mu Analytics",
+    "email": "contact@mu.example",
+    "phone": "0100000012",
+    "status": "EN_COURS",
+    "domain": "INFORMATIQUE"
+  }
+]
