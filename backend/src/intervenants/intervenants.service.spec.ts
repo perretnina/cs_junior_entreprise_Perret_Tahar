@@ -73,6 +73,13 @@ describe('IntervenantsService', () => {
         orderBy: {
           lastName: 'asc',
         },
+        include: {
+          missions: {
+            include: {
+              mission: true,
+            },
+          },
+        },
       });
     });
 

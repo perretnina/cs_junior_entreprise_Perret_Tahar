@@ -1,4 +1,3 @@
-
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   vi,
@@ -113,7 +112,8 @@ describe('KpiService', () => {
   });
 
   it('should exclude unsigned missions from signed revenue', async () => {
-    prismaMock.mission.findMany.mockResolvedValue([
+    // Première requête : toutes les missions
+    prismaMock.mission.findMany.mockResolvedValueOnce([
       {
         id: 1,
         price: '3000.00',
@@ -131,6 +131,16 @@ describe('KpiService', () => {
         signedAt: null,
         prospectId: 2,
         intervenants: [],
+      },
+    ]);
+
+    // Deuxième requête : uniquement les missions signées
+    prismaMock.mission.findMany.mockResolvedValueOnce([
+      {
+        id: 1,
+        price: '3000.00',
+        signedAt: new Date('2026-02-20'),
+        prospectId: 1,
       },
     ]);
 
