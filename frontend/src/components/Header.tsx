@@ -17,7 +17,7 @@ export default function Header() {
 
         <div>
           <h1 className="app-title">
-            <Link to="/">Junior Mines Provence</Link>
+            <Link to="/">Junior Entreprise Castelmont</Link>
           </h1>
 
           <p className="app-tagline">

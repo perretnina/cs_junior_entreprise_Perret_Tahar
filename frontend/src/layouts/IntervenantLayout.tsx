@@ -25,7 +25,7 @@ export default function IntervenantLayout() {
 
           <div>
             <h1 className="app-title">
-              <Link to="/intervenant">Junior Mines Provence</Link>
+              <Link to="/intervenant">Junior Entreprise Castelmont</Link>
             </h1>
 
             <p className="app-tagline">
