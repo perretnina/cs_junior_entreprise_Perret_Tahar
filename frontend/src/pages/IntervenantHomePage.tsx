@@ -30,14 +30,22 @@ export default function IntervenantHomePage() {
             Mon profil
           </h2>
 
-          <p className="profile-info">
-            <strong>Email :</strong> {user?.email}
-          </p>
+          <div className="profile-info">
+            <p>
+              <strong>Nom :</strong> {user?.lastName ?? '—'}
+            </p>
+            <p>
+              <strong>Prénom :</strong> {user?.firstName ?? '—'}
+            </p>
+            <p>
+              <strong>Email :</strong> {user?.email}
+            </p>
+          </div>
         </section>
 
         <Link
           to="/intervenant/missions"
-          className="card card-link"
+          className="card card-link flex flex-col items-center justify-center text-center"
         >
           <BriefcaseBusiness
             className="kpi-icon"

@@ -22,5 +22,17 @@
     "firstName": "Thomas",
     "lastName": "Robert",
     "schoolEndDate": "2027-06-30"
+  },
+  {
+    "email": "intervenant4@test.local",
+    "firstName": "Chloé",
+    "lastName": "Dubois",
+    "schoolEndDate": "2028-06-30"
+  },
+  {
+    "email": "intervenant5@test.local",
+    "firstName": "Hugo",
+    "lastName": "Laurent",
+    "schoolEndDate": "2027-06-30"
   }
 ]

@@ -14,14 +14,24 @@ export default function IntervenantLayout() {
   return (
     <div className="app">
       <header className="app-header">
-        <div>
-          <h1 className="app-title">
-            Espace Intervenant
-          </h1>
+        <div className="header-brand">
+          <Link to="/intervenant" className="header-logo-link">
+            <img
+              src="/images/logo-junior.png"
+              alt="Logo de la Junior-Entreprise"
+              className="header-logo"
+            />
+          </Link>
 
-          <p className="app-tagline">
-            Junior-Entreprise
-          </p>
+          <div>
+            <h1 className="app-title">
+              <Link to="/intervenant">Junior Mines Provence</Link>
+            </h1>
+
+            <p className="app-tagline">
+              Espace Intervenant
+            </p>
+          </div>
         </div>
 
         <nav className="app-nav">

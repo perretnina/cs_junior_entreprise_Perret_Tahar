@@ -14,6 +14,8 @@ type User = {
   isBureau: boolean;
   isIntervenant: boolean;
   intervenantId: number | null;
+  firstName: string | null;
+  lastName: string | null;
 };
 
 type ActiveSpace = 'bureau' | 'intervenant';
@@ -71,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void restoreSession();
   }, []);
 
-  async function login(email: string, password: string) {
+  async function login(email: string, password: string, activeSpace: ActiveSpace) {
     const result = await apiRequest('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password, activeSpace }),
@@ -79,6 +81,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     sessionStorage.setItem('accessToken', result.accessToken);
     setUser(result.user);
+
+    const profile = await apiRequest('/auth/me');
+    setUser(profile);
 
     return result.user as User;
   }
