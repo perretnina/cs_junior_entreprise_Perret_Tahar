@@ -1,6 +1,6 @@
 # Projet Web Junior-Entreprise - **RAPPORT PRODUIT**
 
-# Lien vers le fil:
+## Lien vers la discussion :
 https://github.com/gaetanmaisse/ismin-web-2026-tps/discussions/11
 
 ## 1. Le besoin
@@ -52,16 +52,12 @@ Quelques remarques dont il a fallu tenir compte, issues de la discussion avec le
 Nous avons dû tenir compte de ces contraintes lors du développement des trois fonctionnalités.
 
 ### Ce que nous avons coupé 
-#TODO
+
+- L'inscription libre des utilisateurs (voir journal de décisions, section *Authentification*.) n'est pas autorisée.
+
+- Le projet ne propose pas de stocker des documents comme les factures ou les contrats, ça pourrait constituer une amélioration envisageable.
 
 ## 3. Le journal de décisions
-
-Cinq à dix entrées :
-
-- Ce que vous avez choisi.
-- Ce que vous avez écarté.
-- Pourquoi.
-- Chaque entrée renvoie à un commit.
 
 ### - La page d'accueil : distinction entre les deux rôles possibles
 
@@ -77,10 +73,9 @@ Commits associés :
 
 - 39c13c7 feat(auth): implement JWT authentication and role-based access
 
-- 48a9ca4 fix: correct access permissions (un bureau+intervenant ne voyait jamais son espace intervenant )
+- 48a9ca4 fix: correct access permissions (un bureau+intervenant ne voyait jamais son espace intervenant)
 
-
-### -  Authentification :
+### -  Authentification : il n'est pas autorisé de créer un compte librement 
 
 N'importe qui ne peut pas créer un compte et accéder aux données. Les comptes sont créés par l'administrateur, depuis le dossier *backend* avec la commande ```npm run user:create```. Dans le cadre du projet, une série d'identifiants par défaut sont disponible sur le fichier */backend/test-data/test-credentials.local.example.json* pour éviter d'avoir à créer un compte.
 
@@ -88,9 +83,23 @@ On aurait pu faire un onglet spécialement dédié à la passation, permettant d
 
 Commit associé : 39c13c7 feat(auth): implement JWT authentication and role-based acces.
 
-### Validation des missions dans le backend pour empêcher les erreurs d'origine humaine :
+### - Les accès expirent, mais les comptes ne sont jamais supprimés :
 
-Commit associé : 6956797 feat: implement bureau management interface and KPI dashboard
+Les comptes sont tous créés avec une date d'expiration : la date de fin de scolarité pour les intervenants, et la date de fin de mandat pour les membres du bureau. 
+
+Ce choix permet de garder une trace des intervenants ayant travaillés sur les missions passées, même si ces derniers n'ont plus accès à leur compte. Au delà de suivre l'activité actuelle de la junior, cela permet d'en garder un historique complet.
+
+Nous aurions pu choisir de supprimer les comptes au fur et à mesure, mais ça semblait contre intuitif par rapport au besoin initial du client de ne pas perdre de données au fil des mandats.
+
+Commit associé : afbf8f1 fix: finalize access management and frontend build.
+
+### Les intervenants ne doivent pas avoir accès aux prix des missions :
+
+Dans le fichier *backend/src/missions/missions.controller.ts*, nous avons implémenté deux endpoints distincts pour le côté bureau et pour le côté intervenant. Le endpoint dédié au côté intervenant utilise la méthode findMine (cf fichier *missions.service.ts*), qui permet de récupérer dans la base de données uniquement les données effectivement affichées sur l'espace intervenant. Le prix n'est donc jamais récupéré avec ce endpoint. 
+
+Nous aurions pu n'utiliser qu'un seul endpoint GET commun à la partie bureau et à la partie intervenant, et juste ne pas afficher le prix sur l'espace intervenant. C'est plus rapide à coder, mais cela n'aurait pas permis d'éviter qu'un intervenant un peu trop curieux puisse récupérer le prix de sa mission en faisant "F12" sur son navigateur.
+
+Commit associé : 0787d8a feat(api): add CRUD endpoints for missions, prospects and intervenants
 
 ## 4. L'IA, écartée
 
