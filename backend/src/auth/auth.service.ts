@@ -37,12 +37,21 @@ export class AuthService {
 
     const isBureau = this.getBureauAccess(user);
 
+    if (dto.activeSpace === 'bureau' && !isBureau) {
+      throw new UnauthorizedException("Accès Bureau non autorisé");
+    }
+
+    if (dto.activeSpace === 'intervenant' && !user.isIntervenant) {
+      throw new UnauthorizedException("Accès Intervenant non autorisé");
+    }
+
     if (!isBureau && !user.isIntervenant) {
       throw new UnauthorizedException('Aucun accès actif');
     }
 
     const accessToken = await this.jwtService.signAsync({
       sub: user.id,
+      activeSpace: dto.activeSpace,
     });
 
     return {

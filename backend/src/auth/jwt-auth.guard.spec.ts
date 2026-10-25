@@ -1,4 +1,3 @@
-
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   ExecutionContext,
@@ -132,6 +131,7 @@ describe('JwtAuthGuard', () => {
 
     jwtMock.verifyAsync.mockResolvedValue({
       sub: 'invalid-id',
+      activeSpace: 'bureau',
     });
 
     await expect(
@@ -148,6 +148,7 @@ describe('JwtAuthGuard', () => {
 
     jwtMock.verifyAsync.mockResolvedValue({
       sub: 1.5,
+      activeSpace: 'bureau',
     });
 
     await expect(
@@ -162,6 +163,7 @@ describe('JwtAuthGuard', () => {
 
     jwtMock.verifyAsync.mockResolvedValue({
       sub: 999,
+      activeSpace: 'bureau',
     });
 
     prismaMock.user.findUnique.mockResolvedValue(null);
@@ -182,6 +184,7 @@ describe('JwtAuthGuard', () => {
 
     jwtMock.verifyAsync.mockResolvedValue({
       sub: 1,
+      activeSpace: 'bureau',
     });
 
     prismaMock.user.findUnique.mockResolvedValue({
@@ -202,6 +205,7 @@ describe('JwtAuthGuard', () => {
 
     jwtMock.verifyAsync.mockResolvedValue({
       sub: 1,
+      activeSpace: 'bureau',
     });
 
     prismaMock.user.findUnique.mockResolvedValue({
@@ -223,6 +227,7 @@ describe('JwtAuthGuard', () => {
 
     jwtMock.verifyAsync.mockResolvedValue({
       sub: 1,
+      activeSpace: 'bureau',
     });
 
     prismaMock.user.findUnique.mockResolvedValue(validUser);
@@ -244,6 +249,7 @@ describe('JwtAuthGuard', () => {
       email: 'test@example.com',
       isBureau: true,
       isIntervenant: true,
+      activeSpace: 'bureau',
     });
   });
 
@@ -253,6 +259,7 @@ describe('JwtAuthGuard', () => {
 
     jwtMock.verifyAsync.mockResolvedValue({
       sub: 1,
+      activeSpace: 'intervenant',
     });
 
     prismaMock.user.findUnique.mockResolvedValue({
@@ -266,6 +273,7 @@ describe('JwtAuthGuard', () => {
     expect(result).toBe(true);
     expect(request.user.isBureau).toBe(false);
     expect(request.user.isIntervenant).toBe(true);
+    expect(request.user.activeSpace).toBe('intervenant');
   });
 
   it('should authorize a Bureau member without Intervenant access', async () => {
@@ -274,6 +282,7 @@ describe('JwtAuthGuard', () => {
 
     jwtMock.verifyAsync.mockResolvedValue({
       sub: 1,
+      activeSpace: 'bureau',
     });
 
     prismaMock.user.findUnique.mockResolvedValue({
@@ -286,5 +295,60 @@ describe('JwtAuthGuard', () => {
     expect(result).toBe(true);
     expect(request.user.isBureau).toBe(true);
     expect(request.user.isIntervenant).toBe(false);
+    expect(request.user.activeSpace).toBe('bureau');
+  });
+
+  it('should reject a token without activeSpace', async () => {
+    const { context } = createContext('Bearer valid-token');
+
+    jwtMock.verifyAsync.mockResolvedValue({
+      sub: 1,
+    });
+
+    await expect(
+      guard.canActivate(context),
+    ).rejects.toThrow(
+      new UnauthorizedException('Espace invalide'),
+    );
+
+    expect(prismaMock.user.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('should reject an invalid activeSpace', async () => {
+    const { context } = createContext('Bearer valid-token');
+
+    jwtMock.verifyAsync.mockResolvedValue({
+      sub: 1,
+      activeSpace: 'admin',
+    });
+
+    await expect(
+      guard.canActivate(context),
+    ).rejects.toThrow(
+      new UnauthorizedException('Espace invalide'),
+    );
+
+    expect(prismaMock.user.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('should reject a Bureau session without Bureau access', async () => {
+    const { context } = createContext('Bearer valid-token');
+
+    jwtMock.verifyAsync.mockResolvedValue({
+      sub: 1,
+      activeSpace: 'bureau',
+    });
+
+    prismaMock.user.findUnique.mockResolvedValue({
+      ...validUser,
+      isBureau: false,
+      isIntervenant: true,
+    });
+
+    await expect(
+      guard.canActivate(context),
+    ).rejects.toThrow(
+      new UnauthorizedException('Accès non autorisé'),
+    );
   });
 });

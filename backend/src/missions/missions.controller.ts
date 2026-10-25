@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   ParseIntPipe,
@@ -23,6 +24,10 @@ export class MissionsController {
 
   @Get('mine')
   getMine(@Req() request: jwtAuthGuard.AuthenticatedRequest) {
+    if (request.user.activeSpace !== 'intervenant') {
+      throw new ForbiddenException('Accès réservé aux intervenants');
+    }
+
     return this.missionsService.findMine(request.user.id);
   }
 

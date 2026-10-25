@@ -12,7 +12,10 @@ export class BureauGuard implements CanActivate {
     const request =
       context.switchToHttp().getRequest<AuthenticatedRequest>();
 
-    if (!request.user?.isBureau) {
+    if (
+      !request.user?.isBureau ||
+      request.user.activeSpace !== 'bureau'
+    ) {
       throw new ForbiddenException('Accès réservé au Bureau');
     }
 

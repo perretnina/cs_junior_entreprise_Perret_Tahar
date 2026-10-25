@@ -1,4 +1,3 @@
-
 import {
   createContext,
   useContext,
@@ -22,7 +21,11 @@ type ActiveSpace = 'bureau' | 'intervenant';
 type AuthContextType = {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<User>;
+  login: (
+    email: string,
+    password: string,
+    activeSpace: 'bureau' | 'intervenant',
+  ) => Promise<User>;
   logout: () => void;
   activeSpace: ActiveSpace | null;
   setActiveSpace: (space: ActiveSpace) => void;
@@ -71,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function login(email: string, password: string) {
     const result = await apiRequest('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, activeSpace }),
     });
 
     sessionStorage.setItem('accessToken', result.accessToken);

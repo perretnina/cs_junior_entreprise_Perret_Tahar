@@ -11,7 +11,17 @@ vi.mock('../context/AuthContext', () => ({
 
 const mockedUseAuth = vi.mocked(useAuth);
 
-const bureau = {
+type ActiveSpace = 'bureau' | 'intervenant';
+
+type TestUser = {
+  id: number;
+  email: string;
+  isBureau: boolean;
+  isIntervenant: boolean;
+  intervenantId: number | null;
+};
+
+const bureau: TestUser = {
   id: 1,
   email: 'bureau@test.fr',
   isBureau: true,
@@ -19,7 +29,7 @@ const bureau = {
   intervenantId: null,
 };
 
-const intervenant = {
+const intervenant: TestUser = {
   id: 2,
   email: 'intervenant@test.fr',
   isBureau: false,
@@ -27,14 +37,17 @@ const intervenant = {
   intervenantId: 2,
 };
 
+const compteMixte: TestUser = {
+  id: 3,
+  email: 'mixte@test.fr',
+  isBureau: true,
+  isIntervenant: true,
+  intervenantId: 3,
+};
+
 function mockAuth(
-  user: {
-    id: number;
-    email: string;
-    isBureau: boolean;
-    isIntervenant: boolean;
-    intervenantId: number | null;
-  } | null,
+  user: TestUser | null,
+  activeSpace: ActiveSpace | null = null,
   loading = false,
 ) {
   mockedUseAuth.mockReturnValue({
@@ -42,6 +55,8 @@ function mockAuth(
     loading,
     login: vi.fn(),
     logout: vi.fn(),
+    activeSpace,
+    setActiveSpace: vi.fn(),
   });
 }
 
@@ -57,6 +72,11 @@ function renderProtectedRoute(bureauOnly = false) {
             element={<p>Page protégée</p>}
           />
         </Route>
+
+        <Route
+          path="/"
+          element={<p>Espace Bureau</p>}
+        />
 
         <Route
           path="/welcome"
@@ -89,7 +109,7 @@ describe('ProtectedRoute', () => {
   });
 
   it('interdit l’accès Bureau à un Intervenant', () => {
-    mockAuth(intervenant);
+    mockAuth(intervenant, 'intervenant');
 
     renderProtectedRoute(true);
 
@@ -99,7 +119,7 @@ describe('ProtectedRoute', () => {
   });
 
   it('autorise un membre du Bureau', () => {
-    mockAuth(bureau);
+    mockAuth(bureau, 'bureau');
 
     renderProtectedRoute(true);
 
@@ -109,12 +129,52 @@ describe('ProtectedRoute', () => {
   });
 
   it('affiche le chargement de la session', () => {
-    mockAuth(null, true);
+    mockAuth(null, null, true);
 
     renderProtectedRoute();
 
     expect(
       screen.getByText('Chargement...'),
+    ).toBeInTheDocument();
+  });
+
+  it('autorise un compte mixte connecté dans l’espace Bureau', () => {
+    mockAuth(compteMixte, 'bureau');
+
+    renderProtectedRoute(true);
+
+    expect(
+      screen.getByText('Page protégée'),
+    ).toBeInTheDocument();
+  });
+
+  it('interdit l’espace Bureau à un compte mixte connecté comme Intervenant', () => {
+    mockAuth(compteMixte, 'intervenant');
+
+    renderProtectedRoute(true);
+
+    expect(
+      screen.getByText('Espace Intervenant'),
+    ).toBeInTheDocument();
+  });
+
+  it('autorise un compte mixte connecté dans l’espace Intervenant', () => {
+    mockAuth(compteMixte, 'intervenant');
+
+    renderProtectedRoute();
+
+    expect(
+      screen.getByText('Page protégée'),
+    ).toBeInTheDocument();
+  });
+
+  it('interdit l’espace Intervenant à un compte mixte connecté comme Bureau', () => {
+    mockAuth(compteMixte, 'bureau');
+
+    renderProtectedRoute();
+
+    expect(
+      screen.getByText('Espace Bureau'),
     ).toBeInTheDocument();
   });
 });

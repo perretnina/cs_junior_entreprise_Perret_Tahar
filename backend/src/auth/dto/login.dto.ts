@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsString, IsNotEmpty, IsIn } from 'class-validator';
 
 export class LoginDto {
   @IsEmail()
@@ -7,4 +7,7 @@ export class LoginDto {
   @IsString()
   @IsNotEmpty()
   password!: string;
+
+  @IsIn(['bureau', 'intervenant'])
+  activeSpace!: 'bureau' | 'intervenant';
 }

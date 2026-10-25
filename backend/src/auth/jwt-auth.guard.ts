@@ -13,6 +13,7 @@ export interface AuthenticatedUser {
   email: string;
   isBureau: boolean;
   isIntervenant: boolean;
+  activeSpace: 'bureau' | 'intervenant';
 }
 
 export interface AuthenticatedRequest extends Request {
@@ -38,18 +39,29 @@ export class JwtAuthGuard implements CanActivate {
 
     const token = authorization.slice(7);
 
-    let payload: { sub: number };
+    let payload: {
+      sub: number;
+      activeSpace: 'bureau' | 'intervenant';
+    };
 
     try {
-      payload = await this.jwtService.verifyAsync<{ sub: number }>(
-        token,
-      );
+      payload = await this.jwtService.verifyAsync<{
+        sub: number;
+        activeSpace: 'bureau' | 'intervenant';
+      }>(token);
     } catch {
       throw new UnauthorizedException('Token invalide ou expiré');
     }
 
     if (!Number.isInteger(payload.sub)) {
       throw new UnauthorizedException('Token invalide');
+    }
+
+    if (
+      payload.activeSpace !== 'bureau' &&
+      payload.activeSpace !== 'intervenant'
+    ) {
+      throw new UnauthorizedException('Espace invalide');
     }
 
     const user = await this.prisma.user.findUnique({
@@ -69,11 +81,19 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedException('Aucun accès actif');
     }
 
+    if (
+      (payload.activeSpace === 'bureau' && !isBureau) ||
+      (payload.activeSpace === 'intervenant' && !user.isIntervenant)
+    ) {
+      throw new UnauthorizedException('Accès non autorisé');
+    }
+
     request.user = {
       id: user.id,
       email: user.email,
       isBureau,
       isIntervenant: user.isIntervenant,
+      activeSpace: payload.activeSpace,
     };
 
     return true;

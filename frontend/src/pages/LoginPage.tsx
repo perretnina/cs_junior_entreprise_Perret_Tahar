@@ -36,7 +36,11 @@ export default function LoginPage() {
     setSubmitting(true);
 
     try {
-      const connectedUser = await login(email, password);
+      const connectedUser = await login(
+        email,
+        password,
+        isBureauLogin ? 'bureau' : 'intervenant',
+      );
 
       if (isBureauLogin && !connectedUser.isBureau) {
         logout();

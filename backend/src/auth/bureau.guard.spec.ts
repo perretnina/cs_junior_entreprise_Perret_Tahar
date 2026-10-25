@@ -1,4 +1,3 @@
-
 import { describe, expect, it } from 'vitest';
 import {
   ExecutionContext,
@@ -35,6 +34,7 @@ describe('BureauGuard', () => {
       email: 'bureau@example.com',
       isBureau: true,
       isIntervenant: false,
+      activeSpace: 'bureau',
     });
 
     expect(guard.canActivate(context)).toBe(true);
@@ -46,6 +46,7 @@ describe('BureauGuard', () => {
       email: 'both@example.com',
       isBureau: true,
       isIntervenant: true,
+      activeSpace: 'bureau',
     });
 
     expect(guard.canActivate(context)).toBe(true);
@@ -57,6 +58,7 @@ describe('BureauGuard', () => {
       email: 'intervenant@example.com',
       isBureau: false,
       isIntervenant: true,
+      activeSpace: 'intervenant',
     });
 
     expect(() => guard.canActivate(context)).toThrow(
@@ -70,6 +72,7 @@ describe('BureauGuard', () => {
       email: 'inactive@example.com',
       isBureau: false,
       isIntervenant: false,
+      activeSpace: 'bureau',
     });
 
     expect(() => guard.canActivate(context)).toThrow(
@@ -90,6 +93,21 @@ describe('BureauGuard', () => {
       id: 5,
       email: 'unknown@example.com',
       isIntervenant: true,
+      activeSpace: 'bureau',
+    });
+
+    expect(() => guard.canActivate(context)).toThrow(
+      new ForbiddenException('Accès réservé au Bureau'),
+    );
+  });
+
+  it('should reject a mixed-role user connected as Intervenant', () => {
+    const context = createContext({
+      id: 6,
+      email: 'both@example.com',
+      isBureau: true,
+      isIntervenant: true,
+      activeSpace: 'intervenant',
     });
 
     expect(() => guard.canActivate(context)).toThrow(
