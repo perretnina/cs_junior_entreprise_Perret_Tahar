@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import type { Request } from 'express';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { getAccess, getAccessError } from './access-validity.js';
 
 export interface AuthenticatedUser {
   id: number;
@@ -28,9 +29,7 @@ export class JwtAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request =
-      context.switchToHttp().getRequest<AuthenticatedRequest>();
-
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const authorization = request.headers.authorization;
 
     if (!authorization?.startsWith('Bearer ')) {
@@ -38,11 +37,7 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     const token = authorization.slice(7);
-
-    let payload: {
-      sub: number;
-      activeSpace: 'bureau' | 'intervenant';
-    };
+    let payload: { sub: number; activeSpace: 'bureau' | 'intervenant' };
 
     try {
       payload = await this.jwtService.verifyAsync<{
@@ -57,42 +52,30 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedException('Token invalide');
     }
 
-    if (
-      payload.activeSpace !== 'bureau' &&
-      payload.activeSpace !== 'intervenant'
-    ) {
+    if (payload.activeSpace !== 'bureau' && payload.activeSpace !== 'intervenant') {
       throw new UnauthorizedException('Espace invalide');
     }
 
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
+      include: { intervenant: true },
     });
 
     if (!user) {
       throw new UnauthorizedException('Utilisateur introuvable');
     }
 
-    const isBureau =
-      user.isBureau &&
-      user.bureauValidUntil !== null &&
-      user.bureauValidUntil >= new Date();
+    const access = getAccess(user);
+    const authorized = payload.activeSpace === 'bureau' ? access.isBureau : access.isIntervenant;
 
-    if (!isBureau && !user.isIntervenant) {
-      throw new UnauthorizedException('Aucun accès actif');
-    }
-
-    if (
-      (payload.activeSpace === 'bureau' && !isBureau) ||
-      (payload.activeSpace === 'intervenant' && !user.isIntervenant)
-    ) {
-      throw new UnauthorizedException('Accès non autorisé');
+    if (!authorized) {
+      throw new UnauthorizedException(getAccessError(user, payload.activeSpace));
     }
 
     request.user = {
       id: user.id,
       email: user.email,
-      isBureau,
-      isIntervenant: user.isIntervenant,
+      ...access,
       activeSpace: payload.activeSpace,
     };
 

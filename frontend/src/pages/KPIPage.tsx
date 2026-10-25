@@ -215,7 +215,7 @@ export default function KpiPage() {
             >
               <option value="">Toutes les années</option>
               {Array.from(
-                { length: 8 },
+                { length: currentYear - 2023 + 1 },
                 (_, index) => currentYear - index,
               ).map((value) => (
                 <option key={value} value={value}>

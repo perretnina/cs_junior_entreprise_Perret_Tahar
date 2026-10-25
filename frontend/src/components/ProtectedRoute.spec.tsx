@@ -19,6 +19,8 @@ type TestUser = {
   isBureau: boolean;
   isIntervenant: boolean;
   intervenantId: number | null;
+  firstName: string | null;
+  lastName: string | null;
 };
 
 const bureau: TestUser = {
@@ -27,6 +29,8 @@ const bureau: TestUser = {
   isBureau: true,
   isIntervenant: false,
   intervenantId: null,
+  firstName: null,
+  lastName: null,
 };
 
 const intervenant: TestUser = {
@@ -35,6 +39,8 @@ const intervenant: TestUser = {
   isBureau: false,
   isIntervenant: true,
   intervenantId: 2,
+  firstName: 'Alice',
+  lastName: 'Martin',
 };
 
 const compteMixte: TestUser = {
@@ -43,6 +49,8 @@ const compteMixte: TestUser = {
   isBureau: true,
   isIntervenant: true,
   intervenantId: 3,
+  firstName: 'Thomas',
+  lastName: 'Robert',
 };
 
 function mockAuth(

@@ -34,5 +34,41 @@
     "firstName": "Hugo",
     "lastName": "Laurent",
     "schoolEndDate": "2027-06-30"
+  },
+  {
+    "email": "ancien1@test.local",
+    "firstName": "Camille",
+    "lastName": "Moreau",
+    "schoolEndDate": "2024-06-30"
+  },
+  {
+    "email": "ancien2@test.local",
+    "firstName": "Nathan",
+    "lastName": "Lefebvre",
+    "schoolEndDate": "2024-06-30"
+  },
+  {
+    "email": "ancien3@test.local",
+    "firstName": "Léa",
+    "lastName": "Michel",
+    "schoolEndDate": "2025-06-30"
+  },
+  {
+    "email": "ancien4@test.local",
+    "firstName": "Gabriel",
+    "lastName": "Laurent",
+    "schoolEndDate": "2025-06-30"
+  },
+  {
+    "email": "ancien5@test.local",
+    "firstName": "Sarah",
+    "lastName": "Roux",
+    "schoolEndDate": "2026-06-30"
+  },
+  {
+    "email": "ancien6@test.local",
+    "firstName": "Maxime",
+    "lastName": "Fontaine",
+    "schoolEndDate": "2026-06-30"
   }
 ]

@@ -1,10 +1,8 @@
-
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import {
   Domaine,
   StatutMission,
-  StatutProspect,
 } from '../generated/prisma/enums.js';
 
 @Injectable()
@@ -43,7 +41,6 @@ export class KpiService {
       },
     });
 
-    // All signed missions are included, regardless of their current status.
     const signedMissions = await this.prisma.mission.findMany({
       where: {
         ...(domain ? { domain } : {}),
@@ -67,22 +64,18 @@ export class KpiService {
       },
     });
 
-    // 1. Total missions, filtered by their start date.
     const totalMissions = operationalMissions.length;
 
-    // 2. Signed revenue, filtered by signature date.
     const signedRevenue = signedMissions.reduce(
       (sum, mission) => sum + Number(mission.price),
       0,
     );
 
-    // 3. Average price of signed missions.
     const averageSignedPrice =
       signedMissions.length > 0
         ? signedRevenue / signedMissions.length
         : 0;
 
-    // 4. Average mission duration in days.
     const totalDuration = operationalMissions.reduce(
       (sum, mission) => {
         const duration =
@@ -98,7 +91,6 @@ export class KpiService {
     const averageDurationDays =
       totalMissions > 0 ? totalDuration / totalMissions : 0;
 
-    // 5. Distinct assigned intervenants.
     const intervenantIds = new Set(
       operationalMissions.flatMap((mission) =>
         mission.intervenants.map(
@@ -109,12 +101,13 @@ export class KpiService {
 
     const distinctIntervenants = intervenantIds.size;
 
-    // 6. Contacted prospects in the selected domain.
     const prospects = await this.prisma.prospect.findMany({
       where: {
         ...(domain ? { domain } : {}),
-        status: {
-          not: StatutProspect.PAS_ENCORE_CONTACTE,
+        firstContactDate: {
+          not: null,
+          ...(startDate ? { gte: startDate } : {}),
+          ...(endDate ? { lte: endDate } : {}),
         },
       },
       select: {
@@ -126,11 +119,26 @@ export class KpiService {
       prospects.map((prospect) => prospect.id),
     );
 
-    // A prospect is converted once, even with multiple signed missions.
+    const convertedMissions = await this.prisma.mission.findMany({
+      where: {
+        ...(domain ? { domain } : {}),
+        status: {
+          not: StatutMission.DEVIS,
+        },
+        signedAt: {
+          not: null,
+        },
+        prospectId: {
+          in: [...contactedProspectIds],
+        },
+      },
+      select: {
+        prospectId: true,
+      },
+    });
+
     const convertedProspectIds = new Set(
-      signedMissions
-        .map((mission) => mission.prospectId)
-        .filter((id) => contactedProspectIds.has(id)),
+      convertedMissions.map((mission) => mission.prospectId),
     );
 
     const contactedProspects = contactedProspectIds.size;

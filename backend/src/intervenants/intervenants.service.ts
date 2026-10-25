@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateIntervenantDto } from './dto/create-intervenant.dto.js';
-import { NotFoundException } from '@nestjs/common';
 import { UpdateIntervenantDto } from './dto/update-intervenant.dto.js';
 
 @Injectable()
@@ -10,14 +9,10 @@ export class IntervenantsService {
 
   findAll() {
     return this.prisma.intervenant.findMany({
-      orderBy: {
-        lastName: 'asc',
-      },
+      orderBy: { lastName: 'asc' },
       include: {
         missions: {
-          include: {
-            mission: true,
-          },
+          include: { mission: true },
         },
       },
     });
@@ -35,39 +30,54 @@ export class IntervenantsService {
   }
 
   async update(id: number, dto: UpdateIntervenantDto) {
-  const intervenant = await this.prisma.intervenant.findUnique({
-    where: { id },
-  });
+    const intervenant = await this.prisma.intervenant.findUnique({
+      where: { id },
+    });
 
-  if (!intervenant) {
-    throw new NotFoundException('Intervenant introuvable');
+    if (!intervenant) {
+      throw new NotFoundException('Intervenant introuvable');
+    }
+
+    const { schoolEndDate, ...otherFields } = dto;
+
+    if (schoolEndDate !== undefined) {
+      const newSchoolEndDate = new Date(schoolEndDate);
+      const conflictingAssignment = await this.prisma.missionIntervenant.findFirst({
+        where: {
+          intervenantId: id,
+          mission: { endDate: { gt: newSchoolEndDate } },
+        },
+      });
+
+      if (conflictingAssignment) {
+        throw new BadRequestException(
+          'La date de fin de scolarité est antérieure à la fin d’une mission affectée à cet intervenant.',
+        );
+      }
+    }
+
+    return this.prisma.intervenant.update({
+      where: { id },
+      data: {
+        ...otherFields,
+        ...(schoolEndDate !== undefined && {
+          schoolEndDate: new Date(schoolEndDate),
+        }),
+      },
+    });
   }
 
-  const { schoolEndDate, ...otherFields } = dto;
+  async remove(id: number) {
+    const intervenant = await this.prisma.intervenant.findUnique({
+      where: { id },
+    });
 
-  return this.prisma.intervenant.update({
-    where: { id },
-    data: {
-      ...otherFields,
-      ...(schoolEndDate !== undefined && {
-        schoolEndDate: new Date(schoolEndDate),
-      }),
-    },
-  });
-}
+    if (!intervenant) {
+      throw new NotFoundException('Intervenant introuvable');
+    }
 
-async remove(id: number) {
-  const intervenant = await this.prisma.intervenant.findUnique({
-    where: { id },
-  });
-
-  if (!intervenant) {
-    throw new NotFoundException('Intervenant introuvable');
+    return this.prisma.intervenant.delete({
+      where: { id },
+    });
   }
-
-  return this.prisma.intervenant.delete({
-    where: { id },
-  });
-}
-
 }

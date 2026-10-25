@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import {
@@ -10,8 +9,6 @@ import {
 
 import KpiCard from '../components/KpiCard';
 import { getMissions, type Mission } from '../api/missions';
-import { getProspects } from '../api/prospects';
-import { getIntervenants } from '../api/intervenants';
 import { getKpi } from '../api/kpi';
 
 type DashboardData = {
@@ -65,23 +62,21 @@ export default function DashboardPage() {
 
     async function loadDashboard() {
       try {
-        const [missions, prospects, intervenants, kpi] =
-          await Promise.all([
-            getMissions(),
-            getProspects(),
-            getIntervenants(),
-            getKpi(),
-          ]);
+        const [missions, kpi] = await Promise.all([
+          getMissions(),
+          getKpi(new Date().getFullYear()),
+        ]);
 
         if (!active) return;
 
         setData({
-          totalMissions: missions.length,
-          totalProspects: prospects.length,
+          totalMissions: kpi.totalMissions,
+          totalProspects: kpi.contactedProspects,
           signedRevenue: kpi.signedRevenue,
-          totalIntervenants: intervenants.length,
+          totalIntervenants: kpi.distinctIntervenants,
           recentMissions: [...missions]
-            .sort((a, b) => b.id - a.id)
+            .filter((mission) => mission.startDate.startsWith('2026'))
+            .sort((a, b) => b.startDate.localeCompare(a.startDate))
             .slice(0, 5),
         });
       } catch (err) {
@@ -139,7 +134,7 @@ export default function DashboardPage() {
             />
 
             <KpiCard
-              title="Chiffre d'affaires"
+              title={`CA signé ${new Date().getFullYear()}`}
               value={currencyFormatter.format(data.signedRevenue)}
               icon={Wallet}
               to="/kpi"

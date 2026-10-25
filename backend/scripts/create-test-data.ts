@@ -1,4 +1,3 @@
-
 import 'dotenv/config';
 import { readFile } from 'node:fs/promises';
 import { PrismaPg } from '@prisma/adapter-pg';
@@ -35,6 +34,7 @@ type TestProspect = {
   phone: string | null;
   status: StatutProspect;
   domain: Domaine;
+  firstContactDate: string | null;
 };
 
 type TestMission = {
@@ -99,7 +99,6 @@ async function main() {
 
   const users = credentials.users;
 
-  // Vérifier les fichiers avant toute insertion.
   if (
     !Array.isArray(users) ||
     !Array.isArray(intervenants) ||
@@ -167,11 +166,31 @@ async function main() {
     if (
       !prospect.name.startsWith(TEST_PREFIX) ||
       !Object.values(StatutProspect).includes(prospect.status) ||
-      !Object.values(Domaine).includes(prospect.domain)
+      !Object.values(Domaine).includes(prospect.domain) ||
+      (
+        prospect.firstContactDate !== null &&
+        typeof prospect.firstContactDate !== 'string'
+      ) ||
+      (
+        prospect.status === StatutProspect.PAS_ENCORE_CONTACTE &&
+        prospect.firstContactDate !== null
+      ) ||
+      (
+        prospect.status !== StatutProspect.PAS_ENCORE_CONTACTE &&
+        prospect.firstContactDate === null
+      )
     ) {
       throw new Error(`Prospect invalide : ${prospect.name}`);
     }
+
+    if (prospect.firstContactDate !== null) {
+      toDate(prospect.firstContactDate);
+    }
   }
+
+  const prospectsByKey = new Map(
+    prospects.map((prospect) => [prospect.key, prospect]),
+  );
 
   for (const mission of missions) {
     if (
@@ -195,6 +214,37 @@ async function main() {
       toDate(mission.signedAt);
     }
 
+    const prospect = prospectsByKey.get(mission.prospectKey);
+
+    if (!prospect) {
+      throw new Error(
+        `Prospect introuvable : ${mission.prospectKey}`,
+      );
+    }
+
+    if (mission.domain !== prospect.domain) {
+      throw new Error(
+        `Domaine incohérent : ${mission.title}`,
+      );
+    }
+
+    if (mission.status !== StatutMission.DEVIS) {
+      if (!mission.signedAt) {
+        throw new Error(
+          `Date de signature manquante : ${mission.title}`,
+        );
+      }
+
+      if (
+        !prospect.firstContactDate ||
+        prospect.firstContactDate > mission.signedAt
+      ) {
+        throw new Error(
+          `Date de premier contact incohérente : ${mission.title}`,
+        );
+      }
+    }
+
     if (
       !Number.isFinite(Number(mission.price)) ||
       Number(mission.price) < 0
@@ -203,7 +253,6 @@ async function main() {
     }
   }
 
-  // Préparer les mots de passe hachés.
   const preparedUsers = await Promise.all(
     users.map(async (user) => ({
       ...user,
@@ -216,10 +265,8 @@ async function main() {
   });
 
   try {
-    // Toutes les écritures sont atomiques.
     await prisma.$transaction(
       async (tx) => {
-        // Vérifier les conflits avec les données existantes.
         const existingUsers = await tx.user.findMany({
           where: { email: { in: userEmails } },
         });
@@ -250,7 +297,6 @@ async function main() {
 
         const userIds = new Map<string, number>();
 
-        // 1. Comptes utilisateurs
         for (const user of preparedUsers) {
           const isBureau = user.role !== 'INTERVENANT';
           const isIntervenant = user.role !== 'BUREAU';
@@ -270,7 +316,6 @@ async function main() {
           userIds.set(user.email, created.id);
         }
 
-        // 2. Fiches Intervenant
         const intervenantIds = new Map<string, number>();
 
         for (const intervenant of intervenants) {
@@ -293,7 +338,6 @@ async function main() {
           intervenantIds.set(intervenant.email, created.id);
         }
 
-        // 3. Prospects
         const prospectIds = new Map<string, number>();
 
         for (const prospect of prospects) {
@@ -304,13 +348,15 @@ async function main() {
               phone: prospect.phone,
               status: prospect.status,
               domain: prospect.domain,
+              firstContactDate: prospect.firstContactDate
+                ? toDate(prospect.firstContactDate)
+                : null,
             },
           });
 
           prospectIds.set(prospect.key, created.id);
         }
 
-        // 4. Missions et affectations
         for (const mission of missions) {
           const prospectId = prospectIds.get(mission.prospectKey);
 

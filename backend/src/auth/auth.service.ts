@@ -1,11 +1,9 @@
-import {
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { LoginDto } from './dto/login.dto.js';
+import { getAccess, getAccessError } from './access-validity.js';
 
 @Injectable()
 export class AuthService {
@@ -13,17 +11,6 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
   ) {}
-
-  private getBureauAccess(user: {
-    isBureau: boolean;
-    bureauValidUntil: Date | null;
-  }) {
-    return (
-      user.isBureau &&
-      user.bureauValidUntil !== null &&
-      user.bureauValidUntil >= new Date()
-    );
-  }
 
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({
@@ -35,18 +22,11 @@ export class AuthService {
       throw new UnauthorizedException('Identifiants incorrects');
     }
 
-    const isBureau = this.getBureauAccess(user);
+    const access = getAccess(user);
+    const authorized = dto.activeSpace === 'bureau' ? access.isBureau : access.isIntervenant;
 
-    if (dto.activeSpace === 'bureau' && !isBureau) {
-      throw new UnauthorizedException("Accès Bureau non autorisé");
-    }
-
-    if (dto.activeSpace === 'intervenant' && !user.isIntervenant) {
-      throw new UnauthorizedException("Accès Intervenant non autorisé");
-    }
-
-    if (!isBureau && !user.isIntervenant) {
-      throw new UnauthorizedException('Aucun accès actif');
+    if (!authorized) {
+      throw new UnauthorizedException(getAccessError(user, dto.activeSpace));
     }
 
     const accessToken = await this.jwtService.signAsync({
@@ -59,8 +39,7 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        isBureau,
-        isIntervenant: user.isIntervenant,
+        ...access,
         intervenantId: user.intervenant?.id ?? null,
       },
     };
@@ -79,8 +58,7 @@ export class AuthService {
     return {
       id: user.id,
       email: user.email,
-      isBureau: this.getBureauAccess(user),
-      isIntervenant: user.isIntervenant,
+      ...getAccess(user),
       intervenantId: user.intervenant?.id ?? null,
       firstName: user.intervenant?.firstName ?? null,
       lastName: user.intervenant?.lastName ?? null,
