@@ -77,7 +77,7 @@ Commits associés :
 
 ### -  Authentification : il n'est pas autorisé de créer un compte librement 
 
-N'importe qui ne peut pas créer un compte et accéder aux données. Les comptes sont créés par l'administrateur, depuis le dossier *backend* avec la commande ```npm run user:create```. Dans le cadre du projet, une série d'identifiants par défaut sont disponible sur le fichier */backend/test-data/test-credentials.local.example.json* pour éviter d'avoir à créer un compte.
+N'importe qui ne peut pas créer un compte et accéder aux données. Les comptes sont créés par l'administrateur, depuis le dossier *backend* avec la commande ```npm run user:create```. Dans le cadre du projet, une série d'identifiants par défaut sont disponible sur le fichier ```/backend/test-data/test-credentials.local.example.json``` pour éviter d'avoir à créer un compte.
 
 On aurait pu faire un onglet spécialement dédié à la passation, permettant de créer les comptes des membres du prochain bureau. Nous avons écarté cette option car ça faisait ajouter une fonctionnalité supplémentaire pour une tâche n'ayant lieu qu'une fois par an et concernant seulement quelques personnes : c'est assez rapide à faire par l'administrateur. 
 
@@ -100,6 +100,18 @@ Dans le fichier *backend/src/missions/missions.controller.ts*, nous avons implé
 Nous aurions pu n'utiliser qu'un seul endpoint GET commun à la partie bureau et à la partie intervenant, et juste ne pas afficher le prix sur l'espace intervenant. C'est plus rapide à coder, mais cela n'aurait pas permis d'éviter qu'un intervenant un peu trop curieux puisse récupérer le prix de sa mission en faisant "F12" sur son navigateur.
 
 Commit associé : 0787d8a feat(api): add CRUD endpoints for missions, prospects and intervenants
+
+### KPI : calcul de la durée moyenne d'une mission et du chiffre d'affaires
+
+La durée moyenne d'une mission est calculée à partir de la date de fin prévue théoriquement. Cela permet de considérer tous les statuts de missions dans le calcul, et pas uniquement les missions terminées (qui se terminent à une date qui peut différer de la date prévue). C'est un choix que nous avons fait, mais qui peut être discuté.
+
+De même, le chiffre d'affaires aurait pu être calculé de plusieurs manières différentes : le chiffre d'affaires théorique (calculé par rapport à ce qui avait été prévu à la signature de la mission) et le chiffre d'affaires réel (qui tient compte des éventuelles revisites de contrat, des impayés, etc). Nous avons fait le choix de calculer le chiffre d'affaires théorique pour simplifier, mais ça peut également être discuté.
+
+Commit associés : 
+
+- 6353bd1 feat(api): implement KPI statistics and filtering
+
+- 6956797 feat: implement bureau management interface and KPI dashboard
 
 ## 4. L'IA, écartée
 
