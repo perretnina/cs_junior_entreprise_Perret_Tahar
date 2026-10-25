@@ -9,7 +9,7 @@ type ProtectedRouteProps = {
 export default function ProtectedRoute({
   bureauOnly = false,
 }: ProtectedRouteProps) {
-  const { user, loading } = useAuth();
+  const { user, loading, activeSpace } = useAuth();
 
   if (loading) {
     return <p className="p-8">Chargement...</p>;
@@ -19,8 +19,12 @@ export default function ProtectedRoute({
     return <Navigate to="/welcome" replace />;
   }
 
-  if (bureauOnly && !user.isBureau) {
+  if (bureauOnly && activeSpace !== 'bureau') {
     return <Navigate to="/intervenant" replace />;
+  }
+
+  if (!bureauOnly && activeSpace !== 'intervenant') {
+    return <Navigate to="/" replace />;
   }
 
   return <Outlet />;

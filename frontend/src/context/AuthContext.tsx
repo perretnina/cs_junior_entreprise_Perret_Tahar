@@ -17,11 +17,15 @@ type User = {
   intervenantId: number | null;
 };
 
+type ActiveSpace = 'bureau' | 'intervenant';
+
 type AuthContextType = {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<User>;
   logout: () => void;
+  activeSpace: ActiveSpace | null;
+  setActiveSpace: (space: ActiveSpace) => void;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -29,6 +33,20 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const [activeSpace, setActiveSpaceState] = useState<ActiveSpace | null>(
+    () => {
+      const stored = sessionStorage.getItem('activeSpace');
+      return stored === 'bureau' || stored === 'intervenant'
+        ? stored
+        : null;
+    },
+  );
+
+  function setActiveSpace(space: ActiveSpace) {
+    sessionStorage.setItem('activeSpace', space);
+    setActiveSpaceState(space);
+  }
 
   useEffect(() => {
     async function restoreSession() {
@@ -40,6 +58,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch {
         sessionStorage.removeItem('accessToken');
         setUser(null);
+        sessionStorage.removeItem('activeSpace');
+        setActiveSpaceState(null);
       } finally {
         setLoading(false);
       }
@@ -63,10 +83,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   function logout() {
     sessionStorage.removeItem('accessToken');
     setUser(null);
+    sessionStorage.removeItem('activeSpace');
+    setActiveSpaceState(null);
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, activeSpace, setActiveSpace }}>
       {children}
     </AuthContext.Provider>
   );

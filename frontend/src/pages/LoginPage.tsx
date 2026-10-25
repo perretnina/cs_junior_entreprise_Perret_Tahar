@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type SubmitEvent } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
   Link,
@@ -8,7 +8,7 @@ import {
 } from 'react-router';
 
 export default function LoginPage() {
-  const { user, login, logout } = useAuth();
+  const { user, login, logout, activeSpace, setActiveSpace } = useAuth();
   const navigate = useNavigate();
   const { role } = useParams();
 
@@ -22,14 +22,14 @@ export default function LoginPage() {
   if (user) {
     return (
       <Navigate
-        to={user.isBureau ? '/' : '/intervenant'}
+        to={activeSpace === 'bureau' ? '/' : '/intervenant'}
         replace
       />
     );
   }
 
   async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
+    event: SubmitEvent<HTMLFormElement>,
   ) {
     event.preventDefault();
     setError('');
@@ -53,6 +53,8 @@ export default function LoginPage() {
         );
         return;
       }
+
+      setActiveSpace(isBureauLogin ? 'bureau' : 'intervenant');
 
       navigate(
         isBureauLogin ? '/' : '/intervenant',

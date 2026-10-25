@@ -10,6 +10,34 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U junior -d junior_entreprise"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    command: sh -c "npx prisma migrate deploy --config prisma7.config.ts && npm run start:prod"
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env.example
+    environment:
+      DATABASE_URL: postgresql://junior:junior_dev@db:5432/junior_entreprise
+      PORT: 3000
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
